@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const BookController_1 = require("../controllers/BookController");
+const BookUseCase_1 = require("../useCases/BookUseCase");
+const BookRepositoryImpl_1 = require("../infrastructure/repositories/BookRepositoryImpl");
+const uploadMiddleware_1 = __importDefault(require("../middlewares/uploadMiddleware"));
+const bookRoutes = (0, express_1.Router)();
+const bookRepositoryImpl = new BookRepositoryImpl_1.BookRepositoryImpl();
+const bookUseCase = new BookUseCase_1.BookUseCase(bookRepositoryImpl);
+const bookController = new BookController_1.BookController(bookUseCase);
+bookRoutes.get('/books', (req, res) => bookController.getAllBooks(req, res));
+bookRoutes.post('/book', uploadMiddleware_1.default.single('file'), (req, res) => bookController.createBook(req, res));
+bookRoutes.patch('/book/:id', uploadMiddleware_1.default.single('file'), (req, res) => bookController.updateBook(req, res));
+bookRoutes.delete('/book/:id', (req, res) => bookController.deleteBook(req, res));
+bookRoutes.get('/book/:id', (req, res) => bookController.findBookById(req, res));
+bookRoutes.get('/search', (req, res) => bookController.searchBooks(req, res));
+exports.default = bookRoutes;
