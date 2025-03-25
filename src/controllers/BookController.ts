@@ -9,6 +9,7 @@ export class BookController {
 
   createBook = async (req: Request, res: Response): Promise<void> => {
     try {
+      console.log('backend create book')
       const title = req.body.title.trim().toLowerCase()
       const author = req.body.author.trim().toLowerCase()
       const publicationYear = Number(req.body.publicationYear)
@@ -16,7 +17,9 @@ export class BookController {
       const isbn = req.body.isbn.trim()
 
       const file = req.file as CustomFile
+      console.log(file,'file')
       const image = file.location
+      console.log(image,'image')
       const isExistingBook = await this.bookUseCase.findByIsbn(req.body.isbn);
       if (isExistingBook) {
         res.status(409).send({ message: 'Book already exists' });

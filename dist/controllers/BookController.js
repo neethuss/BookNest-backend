@@ -15,13 +15,16 @@ class BookController {
         this.bookUseCase = bookUseCase;
         this.createBook = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log('backend create book');
                 const title = req.body.title.trim().toLowerCase();
                 const author = req.body.author.trim().toLowerCase();
                 const publicationYear = Number(req.body.publicationYear);
                 const description = req.body.description.trim();
                 const isbn = req.body.isbn.trim();
                 const file = req.file;
+                console.log(file, 'file');
                 const image = file.location;
+                console.log(image, 'image');
                 const isExistingBook = yield this.bookUseCase.findByIsbn(req.body.isbn);
                 if (isExistingBook) {
                     res.status(409).send({ message: 'Book already exists' });
