@@ -12,10 +12,10 @@ connectDB()
 
 const app = express()
 
-const port = process.env.PORT
+const port = process.env.PORT 
 
 app.use(cors({
-  origin: [ "https://book-nest-frontend-puce.vercel.app","http://localhost:3000"],
+  origin: [ "https://book-nest-frontend-h7vfquysz-neethuss-projects.vercel.app","http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "PATCH","DELETE"],
   credentials: true
 }));
