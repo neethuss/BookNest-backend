@@ -10,17 +10,31 @@ connectDB();
 
 const app = express();
 const port = process.env.PORT || 3003;
-
-// ✅ Apply CORS Middleware (Properly)
 app.use(cors({
   origin: [
-    'https://book-nest-frontend-h7vfquysz-neethuss-projects.vercel.app',
+    'https://book-nest-frontend-h7vfquysz-neethuss-projects.vercel.app', 
     'http://localhost:3000'
   ],
   credentials: true,
-  methods: 'GET,POST,PUT,PATCH,DELETE',
-  allowedHeaders: 'Content-Type, Authorization'
+  methods: 'GET, POST, PUT, PATCH, DELETE',
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Ensure CORS headers are always sent, even on errors
+app.use((req: Request, res: Response, next: NextFunction): void => {
+  res.header("Access-Control-Allow-Origin", "https://book-nest-frontend-h7vfquysz-neethuss-projects.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  if (req.method === "OPTIONS") {
+    res.sendStatus(204);
+    return;
+  }
+
+  next();
+});
+
 
 // Middleware
 app.use(express.json());
