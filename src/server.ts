@@ -1,53 +1,49 @@
-import express, { Express, Request, Response, NextFunction } from 'express'
-import dotenv from 'dotenv'
-import connectDB from './config/dbConfig'
-import BookRoutes from './routes/BookRoute'
-import path from 'path'
+import express, { Express, Request, Response, NextFunction } from 'express';
+import dotenv from 'dotenv';
+import connectDB from './config/dbConfig';
+import BookRoutes from './routes/BookRoute';
+import path from 'path';
+import cors from 'cors';
 
-dotenv.config()
+dotenv.config();
+connectDB();
 
-connectDB()
+const app = express();
+const port = process.env.PORT || 3003;
 
-const app = express()
-
-const port = process.env.PORT || 3003
-
-// CORS Middleware
-const corsMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-  const allowedOrigins = [
+// ✅ Apply CORS Middleware (Properly)
+app.use(cors({
+  origin: [
     'https://book-nest-frontend-h7vfquysz-neethuss-projects.vercel.app',
     'http://localhost:3000'
-  ];
-  const origin = req.headers.origin;
+  ],
+  credentials: true,
+  methods: 'GET,POST,PUT,PATCH,DELETE',
+  allowedHeaders: 'Content-Type, Authorization'
+}));
 
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-    return;
-  }
-
-  next();
-};
-
-app.use(corsMiddleware);
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Routes
 app.use('/', BookRoutes);
 
+// Default Route
 app.get('/', (req: Request, res: Response) => {
-  res.send('hello')
-})
+  res.send('Hello from the backend!');
+});
 
+// ✅ Global Error Handling (Ensures CORS Headers on Errors)
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal Server Error'
+  });
+});
+
+// Start Server
 app.listen(port, () => {
-  console.log(`Backend server connected at port ${port}`)
-})
+  console.log(`Backend server running on port ${port}`);
+});
