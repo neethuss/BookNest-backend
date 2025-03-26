@@ -1,67 +1,53 @@
-import express, { Request, Response, NextFunction} from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import connectDB from './config/dbConfig';
-import BookRoutes from './routes/BookRoute';
-import path from 'path';
+import express, { Express, Request, Response, NextFunction } from 'express'
+import dotenv from 'dotenv'
+import connectDB from './config/dbConfig'
+import BookRoutes from './routes/BookRoute'
+import path from 'path'
 
-// Load environment variables
-dotenv.config();
+dotenv.config()
 
-// Database connection
-connectDB();
+connectDB()
 
-const app = express();
-const port = process.env.PORT;
+const app = express()
 
-// CORS Configuration
-const corsOptions = {
-  origin: [
+const port = process.env.PORT || 3003
+
+// CORS Middleware
+const corsMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+  const allowedOrigins = [
     'https://book-nest-frontend-h7vfquysz-neethuss-projects.vercel.app',
-    'http://localhost:3000' // For development
-  ],
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-  optionsSuccessStatus: 200
+    'http://localhost:3000'
+  ];
+  const origin = req.headers.origin;
+
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+
+  next();
 };
 
-interface ServerError extends Error {
-  status?: number;
-}
-
-
-// Middleware Stack (in correct order)
-app.use(cors(corsOptions));
+app.use(corsMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static file serving
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Debug middleware
-app.use((req, res, next) => {
-  console.log('Request headers:', req.headers);
-  console.log('Origin:', req.headers.origin);
-  next();
-});
-
-// Routes
 app.use('/', BookRoutes);
-app.get('/', (req, res) => {
-  res.send('hello');
-});
 
-// Error handling middleware
-app.use((err:ServerError, req:Request, res:Response, next:NextFunction) => {
-  console.error('Server Error:', err.stack);
-  res.status(err.status || 500).json({
-    error: err.message,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-  });
-});
+app.get('/', (req: Request, res: Response) => {
+  res.send('hello')
+})
 
-// Start server
 app.listen(port, () => {
-  console.log(`Backend server connected at port ${port}`);
-});
+  console.log(`Backend server connected at port ${port}`)
+})
