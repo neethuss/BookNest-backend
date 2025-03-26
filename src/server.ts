@@ -15,7 +15,7 @@ const app = express()
 const port = process.env.PORT
 
 app.use(cors({
-  origin:"https://book-nest-frontend-puce.vercel.app/",
+  origin: [ "https://book-nest-frontend-puce.vercel.app/","http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "PATCH","DELETE"],
   credentials: true
 }));
