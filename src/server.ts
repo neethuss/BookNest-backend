@@ -1,46 +1,38 @@
-import express, { Request, Response, NextFunction } from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import connectDB from './config/dbConfig';
-import BookRoutes from './routes/BookRoute';
-import path from 'path';
+import express from 'express'
+import dotenv from 'dotenv'
+import cors from 'cors'
+import connectDB from './config/dbConfig'
+import BookRoutes from './routes/BookRoute'
+import path from 'path'
 
-dotenv.config();
+dotenv.config()
 
-connectDB();
+//database connection
+connectDB()
 
-const app = express();
-const port = process.env.PORT;
+const app = express()
 
-const allowedOrigins = [
-  "https://book-nest-frontend-puce.vercel.app",
-  "http://localhost:3000"
-];
+const port = process.env.PORT
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-  }
-
-  if (req.method === "OPTIONS") {
-    res.status(204).end();
-    return;
-  }
-
-  next();
-});
+app.use(cors({
+  origin: [ "https://book-nest-frontend-puce.vercel.app","http://localhost:3000"],
+  methods: ["GET", "POST", "PUT", "PATCH","DELETE"],
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use('/', BookRoutes);
+app.use('/',BookRoutes)
 
-app.listen(port, () => {
-  console.log(`Backend server connected at port ${port}`);
-});
+
+app.get('/',(req,res)=>{
+  res.send('hello')
+})
+
+//port connection
+app.listen(port, ()=> {
+  console.log(`Backend server connected at port ${port}`)
+})
