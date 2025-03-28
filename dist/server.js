@@ -15,7 +15,7 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT;
 app.use((0, cors_1.default)({
-    origin: [ "https://book-nest-frontend-puce.vercel.app/","http://localhost:3000"],
+    origin: [ "https://book-nest-frontend-h7vfquysz-neethuss-projects.vercel.app","http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true
 }));

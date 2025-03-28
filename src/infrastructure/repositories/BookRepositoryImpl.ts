@@ -9,7 +9,10 @@ export class BookRepositoryImpl implements BookRepository {
   // Ensure the Elasticsearch index exists
   private async createIndexIfNotExists() {
     const index = 'books'; //name of index in elastic search
+
     const exists = await elasticClient.indices.exists({ index });
+
+    console.log('is exists', exists)
 
     if (!exists) { // if index is not exists, create one
       await elasticClient.indices.create({
@@ -36,6 +39,7 @@ export class BookRepositoryImpl implements BookRepository {
     await this.createIndexIfNotExists(); // Ensure index exists
 
     const newBook = new BookModel(book);
+    console.log(newBook, 'new book')
     await newBook.save();
     //index the new book in elastic search
     await elasticClient.index({
