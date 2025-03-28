@@ -21,6 +21,7 @@ class BookRepositoryImpl {
         return __awaiter(this, void 0, void 0, function* () {
             const index = 'books'; //name of index in elastic search
             const exists = yield elasticSearch_1.default.indices.exists({ index });
+            console.log('is exists', exists);
             if (!exists) { // if index is not exists, create one
                 yield elasticSearch_1.default.indices.create({
                     index,
@@ -46,6 +47,7 @@ class BookRepositoryImpl {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.createIndexIfNotExists(); // Ensure index exists
             const newBook = new BookModel_1.default(book);
+            console.log(newBook, 'new book');
             yield newBook.save();
             //index the new book in elastic search
             yield elasticSearch_1.default.index({
